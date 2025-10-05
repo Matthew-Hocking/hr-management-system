@@ -1,15 +1,11 @@
+export const runtime = "nodejs"
+
+import { auth } from "@/auth"
 import { NextResponse } from "next/server"
-import type { NextRequest } from "next/server"
 
-export function middleware(req: NextRequest) {
+export default auth((req) => {
+  const isLoggedIn = !!req.auth
   const { pathname } = req.nextUrl
-
-  // Extract NextAuth session token from cookies
-  const token =
-    req.cookies.get("next-auth.session-token")?.value ||
-    req.cookies.get("__Secure-next-auth.session-token")?.value
-
-  const isLoggedIn = !!token
 
   // Public routes
   if (pathname === "/login" || pathname === "/") {
@@ -19,13 +15,18 @@ export function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  // Protected routes - require login
+  // Protected routes - must be logged in
   if (!isLoggedIn) {
     return NextResponse.redirect(new URL("/login", req.url))
   }
 
+  // Admin-only routes
+  if (pathname.startsWith("/admin") && req.auth?.user?.role !== "ADMIN") {
+    return NextResponse.redirect(new URL("/employee/dashboard", req.url))
+  }
+
   return NextResponse.next()
-}
+})
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
