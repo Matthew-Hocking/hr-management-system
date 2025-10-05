@@ -8,10 +8,13 @@ export default async function DashboardPage() {
     redirect("/login")
   }
 
-  // Redirect based on role
-  if (session.user.role === "ADMIN") {
-    redirect("/admin/dashboard")
-  } else {
-    redirect("/employee/dashboard")
+  // Role-based redirects
+  switch (session.user.role) {
+    case "ADMIN":
+      redirect("/admin/dashboard")
+    case "EMPLOYEE":
+      redirect("/employee/dashboard")
+    default:
+      redirect("/login")
   }
 }
