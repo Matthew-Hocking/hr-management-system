@@ -85,12 +85,13 @@ export async function PUT(
   }
 }
 
-// DELETE employee
+// DELETE employee (soft-delete)
 export async function DELETE(
   request: Request,
   context: { params: Promise<{ id: string }> }
 ) {
   const { id } = await context.params
+
   try {
     const session = await auth()
     
@@ -98,9 +99,22 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Delete employee
-    await db.employee.delete({
+    const employee = await db.employee.findUnique({
       where: { id },
+      select: { userId: true },
+    })
+
+    if (!employee) {
+      return NextResponse.json({ error: "Employee not found" }, { status: 404 })
+    }
+
+    // Delete employee
+    await db.employee.delete({ where: { id } })
+
+    // Mark associated user as inactive
+    await db.user.update({
+      where: { id: employee.userId },
+      data: { isActive: false },
     })
 
     return NextResponse.json({ message: "Employee deleted successfully" })
