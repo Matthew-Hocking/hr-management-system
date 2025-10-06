@@ -4,15 +4,7 @@ import { Navbar } from "@/components/Navbar"
 import { useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
 import Link from "next/link"
-
-interface Employee {
-  id: string
-  name: string
-  email: string
-  position: string
-  department: string
-  salary: number
-}
+import { Employee } from "@/types/employee"
 
 export default function EditEmployeePage() {
   const router = useRouter()
