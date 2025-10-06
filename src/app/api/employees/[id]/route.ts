@@ -5,8 +5,9 @@ import { NextResponse } from "next/server"
 // GET single employee
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await context.params
   try {
     const session = await auth()
     
@@ -15,7 +16,7 @@ export async function GET(
     }
 
     const employee = await db.employee.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         user: {
           select: {
@@ -43,8 +44,9 @@ export async function GET(
 // PUT update employee
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params
   try {
     const session = await auth()
     
@@ -56,7 +58,7 @@ export async function PUT(
     const { name, position, department, salary } = body
 
     const employee = await db.employee.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name,
         position,
@@ -86,8 +88,9 @@ export async function PUT(
 // DELETE employee
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params
   try {
     const session = await auth()
     
@@ -97,7 +100,7 @@ export async function DELETE(
 
     // Delete employee
     await db.employee.delete({
-      where: { id: params.id },
+      where: { id },
     })
 
     return NextResponse.json({ message: "Employee deleted successfully" })
