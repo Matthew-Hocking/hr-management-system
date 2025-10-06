@@ -161,7 +161,7 @@ export default function EditEmployeePage() {
 
         <div className="bg-white rounded-lg shadow p-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Edit Employee</h1>
-          <p className="text-gray-600 mb-6">"{`Update ${employee?.name}'s information`}</p>
+          <p className="text-gray-600 mb-6">{`Update ${employee?.name}'s information`}</p>
 
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
